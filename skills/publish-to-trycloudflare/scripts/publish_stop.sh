@@ -51,19 +51,33 @@ RUNTIME_DIR="${WORKDIR}/.multica/runtime"
 PID_FILE="${RUNTIME_DIR}/pids/${SERVICE_NAME}.pid"
 
 # Locate stop_service.sh from persistent-service-supervisor
-STOP_SERVICE=""
-CANDIDATE_SUPERVISORS=(
-    "${WORKDIR}/.agents/skills/persistent-service-supervisor/scripts/stop_service.sh"
-    "${SCRIPT_DIR}/../../../persistent-service-supervisor/scripts/stop_service.sh"
-    "${SCRIPT_DIR}/../../persistent-service-supervisor/scripts/stop_service.sh"
-)
+find_supervisor_script() {
+    local target="$1"
+    local dir="$(pwd)"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "${dir}/.agents/skills/persistent-service-supervisor/scripts/${target}" ]]; then
+            echo "${dir}/.agents/skills/persistent-service-supervisor/scripts/${target}"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
 
-for candidate in "${CANDIDATE_SUPERVISORS[@]}"; do
-    if [[ -f "$candidate" ]]; then
-        STOP_SERVICE="$candidate"
-        break
-    fi
-done
+STOP_SERVICE="$(find_supervisor_script stop_service.sh || true)"
+if [[ -z "$STOP_SERVICE" ]]; then
+    CANDIDATE_SUPERVISORS=(
+        "${WORKDIR}/.agents/skills/persistent-service-supervisor/scripts/stop_service.sh"
+        "${SCRIPT_DIR}/../../../persistent-service-supervisor/scripts/stop_service.sh"
+        "${SCRIPT_DIR}/../../persistent-service-supervisor/scripts/stop_service.sh"
+    )
+    for candidate in "${CANDIDATE_SUPERVISORS[@]}"; do
+        if [[ -f "$candidate" ]]; then
+            STOP_SERVICE="$candidate"
+            break
+        fi
+    done
+fi
 
 echo "==> Stopping preview tunnel service '${SERVICE_NAME}'..." >&2
 

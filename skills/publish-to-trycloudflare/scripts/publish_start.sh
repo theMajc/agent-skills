@@ -78,19 +78,33 @@ if [[ -z "$CLOUDFLARED_BIN" || ! -x "$CLOUDFLARED_BIN" ]]; then
 fi
 
 # 2. Locate run_detached.sh from persistent-service-supervisor
-RUN_DETACHED=""
-CANDIDATE_SUPERVISORS=(
-    "${WORKDIR}/.agents/skills/persistent-service-supervisor/scripts/run_detached.sh"
-    "${SCRIPT_DIR}/../../../persistent-service-supervisor/scripts/run_detached.sh"
-    "${SCRIPT_DIR}/../../persistent-service-supervisor/scripts/run_detached.sh"
-)
+find_supervisor_script() {
+    local target="$1"
+    local dir="$(pwd)"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "${dir}/.agents/skills/persistent-service-supervisor/scripts/${target}" ]]; then
+            echo "${dir}/.agents/skills/persistent-service-supervisor/scripts/${target}"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
 
-for candidate in "${CANDIDATE_SUPERVISORS[@]}"; do
-    if [[ -f "$candidate" ]]; then
-        RUN_DETACHED="$candidate"
-        break
-    fi
-done
+RUN_DETACHED="$(find_supervisor_script run_detached.sh || true)"
+if [[ -z "$RUN_DETACHED" ]]; then
+    CANDIDATE_SUPERVISORS=(
+        "${WORKDIR}/.agents/skills/persistent-service-supervisor/scripts/run_detached.sh"
+        "${SCRIPT_DIR}/../../../persistent-service-supervisor/scripts/run_detached.sh"
+        "${SCRIPT_DIR}/../../persistent-service-supervisor/scripts/run_detached.sh"
+    )
+    for candidate in "${CANDIDATE_SUPERVISORS[@]}"; do
+        if [[ -f "$candidate" ]]; then
+            RUN_DETACHED="$candidate"
+            break
+        fi
+    done
+fi
 
 TUNNEL_CMD="${CLOUDFLARED_BIN} tunnel --url http://127.0.0.1:${PORT}"
 
