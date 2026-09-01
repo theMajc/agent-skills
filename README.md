@@ -8,6 +8,7 @@ This repository hosts production-ready, reusable agent skills following the stan
 
 | Skill | Description | Path |
 |---|---|---|
+| [`artifact-generator`](skills/artifact-generator/) | High-fidelity dynamic PDF and responsive web dossier generation via Typst and Tailwind across multiple audience presets. | [`skills/artifact-generator`](skills/artifact-generator/) |
 | [`publish-to-trycloudflare`](skills/publish-to-trycloudflare/) | Publishes a local development port to a public TryCloudflare URL (`https://*.trycloudflare.com`) using an outbound zero-trust tunnel. | [`skills/publish-to-trycloudflare`](skills/publish-to-trycloudflare/) |
 | [`token-reducer`](skills/token-reducer/) | Minimizes agent token usage via sub-3ms RTK terminal compaction, transparent hooks, and Repomix AST codebase context packing. | [`skills/token-reducer`](skills/token-reducer/) |
 
@@ -18,6 +19,9 @@ This repository hosts production-ready, reusable agent skills following the stan
 To import a skill from this monorepo into your Multica workspace:
 
 ```bash
+# Import artifact-generator
+multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/artifact-generator --output json
+
 # Import publish-to-trycloudflare
 multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/publish-to-trycloudflare --output json
 
