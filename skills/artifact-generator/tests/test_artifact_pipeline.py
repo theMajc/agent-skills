@@ -72,5 +72,25 @@ class TestArtifactPipeline(unittest.TestCase):
         except ImportError:
             pass
 
+    def test_05_reproducible_determinism(self):
+        import hashlib
+        dir1 = os.path.join(self.test_dir, "det1")
+        dir2 = os.path.join(self.test_dir, "det2")
+
+        cmd1 = [sys.executable, self.script_path, "--data", self.data_path, "--preset", "executive", "--format", "pdf", "--deterministic", "--output-dir", dir1]
+        cmd2 = [sys.executable, self.script_path, "--data", self.data_path, "--preset", "executive", "--format", "pdf", "--deterministic", "--output-dir", dir2]
+
+        subprocess.run(cmd1, check=True, capture_output=True)
+        subprocess.run(cmd2, check=True, capture_output=True)
+
+        pdf1 = os.path.join(dir1, "artifact_executive.pdf")
+        pdf2 = os.path.join(dir2, "artifact_executive.pdf")
+
+        with open(pdf1, "rb") as f1, open(pdf2, "rb") as f2:
+            hash1 = hashlib.sha256(f1.read()).hexdigest()
+            hash2 = hashlib.sha256(f2.read()).hexdigest()
+
+        self.assertEqual(hash1, hash2, "Deterministic PDF generation failed: SHA256 hashes do not match")
+
 if __name__ == "__main__":
     unittest.main()

@@ -267,6 +267,8 @@ def main():
     parser.add_argument("--preset", choices=["executive", "technical", "graphically_rich"], default="executive", help="Audience styling preset")
     parser.add_argument("--format", choices=["pdf", "svg", "html", "all"], default="all", help="Output format")
     parser.add_argument("--output-dir", default="./dist", help="Output directory path")
+    parser.add_argument("--timestamp", type=int, default=None, help="Fixed UNIX timestamp for reproducible PDF builds")
+    parser.add_argument("--deterministic", action="store_true", help="Enforce bit-for-bit deterministic PDF generation using input file mtime")
     args = parser.parse_args()
 
     script_dir = get_script_dir()
@@ -299,7 +301,14 @@ def main():
     if args.format in ["pdf", "all"]:
         pdf_path = os.path.join(dist_abs, f"{base_name}.pdf")
         t0 = time.perf_counter()
-        cmd = [typst_bin, "compile", "--root", "/", "--input", f"data_file={data_abs}", template_file, pdf_path]
+        cmd = [typst_bin, "compile", "--root", "/", "--input", f"data_file={data_abs}"]
+        if args.timestamp is not None:
+            cmd.extend(["--creation-timestamp", str(args.timestamp)])
+        elif args.deterministic:
+            cmd.extend(["--creation-timestamp", str(int(os.path.getmtime(data_abs)))])
+        elif "SOURCE_DATE_EPOCH" in os.environ:
+            cmd.extend(["--creation-timestamp", os.environ["SOURCE_DATE_EPOCH"]])
+        cmd.extend([template_file, pdf_path])
         res = subprocess.run(cmd, capture_output=True, text=True)
         if res.returncode != 0:
             print(f"Typst compilation failed:\n{res.stderr}", file=sys.stderr)
