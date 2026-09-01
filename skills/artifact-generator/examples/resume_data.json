@@ -1,0 +1,112 @@
+{
+  "basics": {
+    "name": "Alex Mercer",
+    "label": "Principal Distributed Systems & AI Infrastructure Architect",
+    "email": "alex.mercer@systems-core.io",
+    "phone": "+1 (415) 890-2341",
+    "url": "https://alexmercer.dev",
+    "summary": "Systems architect with 12+ years designing mission-critical distributed runtimes, low-latency agent orchestration frameworks, and autonomous developer tooling. Pioneer of deterministic multi-agent state machines and zero-dependency headless artifact pipelines.",
+    "location": {
+      "city": "San Francisco",
+      "region": "California",
+      "countryCode": "US"
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "alexmercer",
+        "url": "https://github.com/alexmercer"
+      },
+      {
+        "network": "LinkedIn",
+        "username": "alex-mercer-systems",
+        "url": "https://linkedin.com/in/alex-mercer-systems"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Nexus Autonomous Systems",
+      "position": "Principal Infrastructure Architect",
+      "url": "https://nexus-systems.io",
+      "startDate": "2022-03",
+      "endDate": "Present",
+      "summary": "Architected the core distributed execution engine powering 50,000+ concurrent autonomous coding agents across multi-cloud hybrid clusters.",
+      "highlights": [
+        "Engineered sub-3ms task dispatch queue using Rust and io_uring, reducing p99 scheduling latency by 84%.",
+        "Designed isolated sandbox runtime with zero-copy memory telemetry and automated memory cap enforcement.",
+        "Authored the company-wide Technical Design Standards and piloted deterministic state recovery for long-running workflows."
+      ]
+    },
+    {
+      "name": "Vortex Cloud Platform",
+      "position": "Staff Distributed Systems Engineer",
+      "url": "https://vortexcloud.com",
+      "startDate": "2018-06",
+      "endDate": "2022-02",
+      "summary": "Led the global edge deployment team responsible for container orchestration, zero-trust traffic tunnels, and paged artifact compilation.",
+      "highlights": [
+        "Built edge document compilation service delivering <50ms PDF synthesis for enterprise billing and reporting.",
+        "Scaled distributed edge ingress to 4.2M req/sec using eBPF-based traffic filtering and zero-trust mesh routing.",
+        "Mentored 14 senior engineers and spearheaded cross-functional incident postmortem processes."
+      ]
+    },
+    {
+      "name": "Aether Data Labs",
+      "position": "Senior Systems Engineer",
+      "url": "https://aetherdata.net",
+      "startDate": "2014-08",
+      "endDate": "2018-05",
+      "summary": "Core contributor to real-time analytics streaming engine and columnar storage serialization formats.",
+      "highlights": [
+        "Implemented high-throughput Apache Arrow columnar serializer achieving 12GB/s memory-to-disk throughput.",
+        "Refactored legacy clustering protocol to Raft consensus, eliminating split-brain edge cases."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of California, Berkeley",
+      "area": "Computer Science & Distributed Systems",
+      "studyType": "B.S. with Highest Honors",
+      "startDate": "2010-08",
+      "endDate": "2014-05",
+      "score": "3.94 / 4.00"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Systems Programming & Runtimes",
+      "level": "Expert",
+      "keywords": ["Rust", "Go", "C/C++", "Linux Kernel", "io_uring", "eBPF", "Memory Safety"]
+    },
+    {
+      "name": "Distributed Architecture",
+      "level": "Expert",
+      "keywords": ["Raft Consensus", "gRPC/Protobuf", "Distributed WAL", "Event Streaming", "Kubernetes"]
+    },
+    {
+      "name": "Agentic AI & Document Pipelines",
+      "level": "Advanced",
+      "keywords": ["Typst", "Chromium DevTools", "LLM Tool Orchestration", "CSS Paged Media", "LaTeX"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Turbine-FS",
+      "description": "High-performance userspace filesystem with content-addressed chunking and cryptographic deduplication.",
+      "highlights": [
+        "Adopted by 12,000+ open-source developers; achieved 18GB/s read throughput in synthetic micro-benchmarks.",
+        "Written in 100% safe Rust with formal TLA+ verification for concurrent synchronization primitives."
+      ],
+      "url": "https://github.com/alexmercer/turbine-fs"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Kubernetes Security Specialist (CKS)",
+      "date": "2023",
+      "issuer": "Linux Foundation"
+    }
+  ]
+}
