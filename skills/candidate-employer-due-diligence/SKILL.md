@@ -27,11 +27,10 @@ To protect the candidate from catastrophic career moves (e.g., joining right bef
   1. *Index 1: Objective Employer & Role Health (Macro Stability)*
   2. *Index 2: Candidate Match & Interview Positioning (Personal Alignment)*
 
-### 3. Adaptive Multi-Track Orchestration (Divide & Conquer)
-- **Problem**: Running deep web searches, document scraping, and forum analysis for 4+ research pillars inside a single session quickly saturates LLM context windows, causing hallucinations, dropped details, and superficial summaries.
-- **Execution Protocol**:
-  - **In Issue/CLI Environments (e.g., Multica)**: When invoked on a parent issue, the lead agent **must scaffold 4 child sub-issues** under the parent issue (`multica issue create --parent <parent-id> --title "Track N: ..."`).
-  - **In Standalone/Chat Environments**: If sub-issue tracking is unavailable, the lead agent **must dispatch isolated subagents** (`invoke_subagent`) or cleanly compartmentalized worker passes before compiling the final synthesis.
+### 3. Anti-Hollow-Orchestration Invariant
+- Sub-issues or subagents are **real units of decoupled execution**, not decorative checklists.
+- **Prohibited**: Creating child sub-issues directly in `done` status without posted comments/evidence.
+- Every research pillar must produce its own self-contained evidence payload in its dedicated ticket or subagent transcript before the parent synthesis begins.
 
 ### 4. The "Floor, Not Ceiling" Source Boundary
 - The agent **must satisfy minimum baseline categories**, but is **never restricted to a fixed static list**.
@@ -39,26 +38,69 @@ To protect the candidate from catastrophic career moves (e.g., joining right bef
 
 ---
 
-## 2. Multi-Agent Pipeline Topology
+## 2. Orchestration Protocols
+
+Depending on the runtime environment, the agent must strictly follow the corresponding orchestration workflow:
+
+### Mode A: Ticket / Issue-Tracking Environment (e.g., Multica Platform)
+When the audit is triggered on a parent issue in Multica:
 
 ```
-                  [ Master Due Diligence Ticket / Lead Agent ]
-                                       │
-         ┌──────────────────┬──────────┴──────────┬──────────────────┐
-         ▼                  ▼                     ▼                  ▼
-    [ Worker 1 ]       [ Worker 2 ]          [ Worker 3 ]       [ Worker 4 ]
-   Financial & Biz    Layoff & Stability    Culture, WLB &    Role & Tech Stack
-     Health Track        History Track       Employee Exp           Track
-         │                  │                     │                  │
-         └──────────────────┼─────────────────────┼──────────────────┘
-                            ▼
-        [ Lead Synthesizer: Quality Gate & Dossier Assembly ]
-                            │
-                            ├── 1. Objective Health Scorecard (Anchored A–F)
-                            ├── 2. Candidate Match & Positioning Index
-                            ├── 3. Verified Red & Yellow Flag Matrix
-                            ├── 4. Deep-Dive Evidence Chapters
-                            └── 5. Tailored Reverse-Interview Playbook
+[Parent Ticket: Audit Employer] (Status: in_progress)
+   │
+   ├── Phase 1 (Fan-Out): Create 4 Child Tickets in 'todo' status
+   │      ├── Child 1: "Track 1: Financial & Business Health"
+   │      ├── Child 2: "Track 2: Layoff & Stability History"
+   │      ├── Child 3: "Track 3: Culture, WLB & Management Quality"
+   │      └── Child 4: "Track 4: Role Scope, Tech Stack & Architecture"
+   │
+   ├── Phase 2 (Pillar Execution & Child Comments):
+   │      ├── Run Track 1 research → Post full findings to Child 1 comment → Set Child 1 to 'done'
+   │      ├── Run Track 2 research → Post full findings to Child 2 comment → Set Child 2 to 'done'
+   │      ├── Run Track 3 research → Post full findings to Child 3 comment → Set Child 3 to 'done'
+   │      └── Run Track 4 research → Post full findings to Child 4 comment → Set Child 4 to 'done'
+   │
+   └── Phase 3 (Fan-In & Synthesis):
+          └── Read comments from Children 1-4 → Synthesize Master Dossier on Parent Ticket → Set Parent to 'done' / 'in_review'
+```
+
+#### Exact Multica CLI Sequence:
+1. **Scaffold Sub-Issues in `todo`**:
+   ```bash
+   multica issue create --title "Track 1: Financial & Business Health" --parent <parent-id> --project <project-id> --status todo
+   multica issue create --title "Track 2: Layoff & Stability History" --parent <parent-id> --project <project-id> --status todo
+   multica issue create --title "Track 3: Culture, WLB & Management Quality" --parent <parent-id> --project <project-id> --status todo
+   multica issue create --title "Track 4: Role Scope, Tech Stack & Architecture" --parent <parent-id> --project <project-id> --status todo
+   ```
+2. **Execute and Post to Each Child**:
+   * For each child issue, execute the dedicated search, write findings to `./trackN_findings.md`, and run:
+     ```bash
+     multica issue comment add <child-id> --content-file "./trackN_findings.md"
+     multica issue status <child-id> done --no-start
+     ```
+3. **Synthesize on Parent**:
+   * Ingest all 4 child comments, generate the unified Due Diligence Dossier, write to `./final_dossier.md`, and run:
+     ```bash
+     multica issue comment add <parent-id> --content-file "./final_dossier.md"
+     ```
+
+---
+
+### Mode B: Standalone / Subagent Environment (Chat or CLI without Ticket Tracking)
+When running in a direct chat room or an autonomous runtime without parent issue tracking:
+
+```
+[Lead Synthesizer Agent]
+   │
+   ├── Step 1: Dispatch 4 Parallel Subagents (invoke_subagent)
+   │      ├── Subagent 1: Role 'Financial Auditor' (Pillar 1 prompt)
+   │      ├── Subagent 2: Role 'Layoff & Stability Auditor' (Pillar 2 prompt)
+   │      ├── Subagent 3: Role 'Culture & WLB Auditor' (Pillar 3 prompt)
+   │      └── Subagent 4: Role 'Architecture & Tech Auditor' (Pillar 4 prompt)
+   │
+   ├── Step 2: Await Structured Subagent Deliverables (isolated context)
+   │
+   └── Step 3: Compile Master Dossier and Output Directly to User
 ```
 
 ---
