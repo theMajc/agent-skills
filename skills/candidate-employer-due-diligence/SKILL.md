@@ -10,20 +10,30 @@ A specialized, high-integrity research pipeline for career transitions. Designed
 
 ---
 
-## 1. Core Principles & Guardrails
+## 1. Core Invariants & Anti-Hallucination Guardrails
 
-To protect the candidate from catastrophic career moves (e.g., joining right before a layoff, entering an abusive on-call rotation, or inheriting crippling technical debt), this skill enforces three non-negotiable invariants:
+To protect the candidate from catastrophic career moves (e.g., joining right before a layoff, entering an abusive on-call rotation, or inheriting crippling technical debt), this skill enforces four non-negotiable invariants:
 
 ### 1. The Zero-Sugarcoating Invariant (Brutal Honesty)
 - Corporate PR, self-published marketing blogs, and recruiter pitches are treated as **unverified claims ($cf = 0.10$)**.
 - The agent must **never euphemize red flags** (e.g., do not call "uncompensated 70-hour weeks" a "fast-paced entrepreneurial environment").
 - When evidence points to high turnover, toxic management, or financial distress, report it explicitly as a **Critical Risk**.
 
-### 2. The Context-Decoupled "Divide & Conquer" Architecture
-- **Problem**: Running deep web searches, document scraping, and forum analysis for 4+ research pillars inside a single session quickly saturates LLM context windows, causing hallucinations, dropped details, and superficial summaries.
-- **Solution**: The primary agent **must delegate** research to specialized sub-tracks or subagents for each pillar. Each worker collects raw data and produces a structured sub-report. The lead agent only ingests the sub-reports for final synthesis.
+### 2. Strict Decoupling of Employer Health vs. Candidate Alignment
+- **The Health Invariant**: The **Objective Employer & Role Health Scorecard** measures *only* factual business stability, financial runway, historical layoff risk, operating friction, and leadership sanity.
+- **No Keyword / Fit Inflation**: A candidate being a 100% technical match for a role **must NEVER inflate or mask** a company's financial instability, high turnover, or architectural dysfunction.
+- **No Technology Glamour**: The presence of modern or trendy tech (e.g., NestJS, Kafka, AI APIs) is **not** an automatic indicator of engineering health. It must be evaluated for operational complexity, maintenance overhead, and over-engineering risk.
+- **Dual-Index Output**: The audit produces two strictly non-overlapping indexes:
+  1. *Index 1: Objective Employer & Role Health (Macro Stability)*
+  2. *Index 2: Candidate Match & Interview Positioning (Personal Alignment)*
 
-### 3. The "Floor, Not Ceiling" Source Boundary
+### 3. Adaptive Multi-Track Orchestration (Divide & Conquer)
+- **Problem**: Running deep web searches, document scraping, and forum analysis for 4+ research pillars inside a single session quickly saturates LLM context windows, causing hallucinations, dropped details, and superficial summaries.
+- **Execution Protocol**:
+  - **In Issue/CLI Environments (e.g., Multica)**: When invoked on a parent issue, the lead agent **must scaffold 4 child sub-issues** under the parent issue (`multica issue create --parent <parent-id> --title "Track N: ..."`).
+  - **In Standalone/Chat Environments**: If sub-issue tracking is unavailable, the lead agent **must dispatch isolated subagents** (`invoke_subagent`) or cleanly compartmentalized worker passes before compiling the final synthesis.
+
+### 4. The "Floor, Not Ceiling" Source Boundary
 - The agent **must satisfy minimum baseline categories**, but is **never restricted to a fixed static list**.
 - If a source dies, gets paywalled, or blocks automated access (e.g., Glassdoor/LinkedIn bot walls), the agent must dynamically discover alternative high-signal sources rather than failing or skipping the pillar.
 
@@ -44,17 +54,16 @@ To protect the candidate from catastrophic career moves (e.g., joining right bef
                             ▼
         [ Lead Synthesizer: Quality Gate & Dossier Assembly ]
                             │
-                            ├── 1. Executive TL;DR & Scorecard (Grades A–F)
-                            ├── 2. Verified Red & Yellow Flag Matrix
-                            ├── 3. Deep-Dive Evidence Chapters
-                            └── 4. Tailored Reverse-Interview Playbook
+                            ├── 1. Objective Health Scorecard (Anchored A–F)
+                            ├── 2. Candidate Match & Positioning Index
+                            ├── 3. Verified Red & Yellow Flag Matrix
+                            ├── 4. Deep-Dive Evidence Chapters
+                            └── 5. Tailored Reverse-Interview Playbook
 ```
 
 ---
 
 ## 3. The 4 Specialized Research Pillars & Minimum Baselines
-
-Every employer audit must cover these 4 pillars. Each worker must query at least the baseline channels and dynamically follow high-signal leads.
 
 ### Pillar 1: Financial Viability & Business Health
 *Goal: Determine if the company has the financial runway and business momentum to sustain long-term employment.*
@@ -87,44 +96,83 @@ Every employer audit must cover these 4 pillars. Each worker must query at least
   * Never fail on Glassdoor/Blind bot blocks. Search search-engine indexed snippets, developer communities, and cross-reference multiple independent developer opinions.
 
 ### Pillar 4: Role Scope, Tech Stack Health & Engineering Maturity
-*Goal: Evaluate technical debt, engineering autonomy, tooling friction, and career growth potential.*
+*Goal: Evaluate technical debt, engineering autonomy, tooling friction, and operational complexity.*
 
 * **Minimum Baseline Inquiries:**
-  * **Tech Stack Modernity**: Core technologies, cloud infrastructure, CI/CD pipeline maturity, automated testing coverage.
+  * **Tech Stack Maturity & Complexity**: Core technologies, cloud infrastructure, CI/CD pipeline maturity, automated testing coverage, microservice sprawl vs monolith.
   * **Engineering Footprint**: Public GitHub organization activity, engineering blogs, tech conference talks, open-source contributions.
-  * **Role Danger Signals**: Vague job responsibilities ("wear many hats" disguised as doing 3 roles), legacy system firefighting, or obsolete legacy frameworks (e.g. unmaintained bespoke monoliths).
+  * **Role Danger Signals**: Vague job responsibilities ("wear many hats" disguised as doing 3 roles), legacy system firefighting, or high on-call pager burden caused by fragile third-party integrations.
 
 ---
 
-## 4. Standardized Output Schema: Employer Due Diligence Dossier
+## 4. Anchored Quantitative Scoring Rubrics (A–F Thresholds)
 
-All research outputs must follow this standardized Markdown schema to ensure consistency, comparability between employers, and actionable decision-making.
+To eliminate qualitative model drift across LLM tiers, assign letter grades using these strict anchored criteria:
+
+### 1. Financial Stability & Runway
+* **A (Exceptional)**: Publicly traded with >$500M annual revenue & positive net operating margins, OR private company with >$30M ARR and verified profitability / >36 months cash runway.
+* **B (Stable / Disciplined)**: Private company with $5M–$30M ARR, verified recent tier-1 institutional funding (within 18 months), or operating at steady break-even in a resilient niche.
+* **C (Moderate Risk / Thin Runway)**: Sub-$5M ARR with unverified cash runway, last funding round >24 months ago without declared profitability, or down-round in last 18 months.
+* **D/F (High / Existential Risk)**: Active bankruptcy/restructuring, burning cash with <6 months runway, debt default, or massive customer revenue collapse.
+
+### 2. Role & Org Stability (Layoff Risk)
+* **A (Highly Secure)**: 0 recorded layoffs or WARN notices across past 36 months; stable C-suite/founder tenure (>3 years average); steady strategic headcount growth.
+* **B (Standard Market Risk)**: 1 minor restructuring round (<10% headcount) during broader market correction, with transparent severance and no subsequent rounds; stable core engineering leadership.
+* **C (Volatile / High Churn)**: Multiple layoff rounds (>15% total) in past 24 months, frequent executive turnover (VP/CTO leaving within <1 year), or recurring team re-organizations.
+* **D/F (Severe Instability)**: Continuous rolling layoffs, WARN notice filings within last 90 days, widespread executive exodus, or abrupt department shuttering.
+
+### 3. Work-Life Balance & Operational Culture
+* **A (Sustainable / Healthy)**: Average reported workweek 35–42 hours; formal, compensated on-call rotation with low pager volume; clear psychological safety and high Glassdoor/Reddit sentiment.
+* **B (Manageable Startup Pace)**: Average workweek 40–48 hours; standard sprint cycles; on-call rotation shared fairly across team with occasional production alerts.
+* **C (High Burnout / Unhealthy On-Call)**: Regular 50+ hour weeks expected; uncompensated 24/7 on-call firefighting; frequent weekend escalations; negative sentiment regarding micromanagement.
+* **D/F (Toxic / Severe Grindhouse)**: Systematic 60+ hour crunch culture; abusive management reviews; extreme turnover (>30% annual engineering churn); broken remote work commitments.
+
+### 4. Tech Stack & Engineering Architecture
+* **A (Modern, Robust & Disciplined)**: Cloud-native, clean CI/CD automated deployment pipelines, high test coverage, standard telemetry (OpenTelemetry/Datadog), low operational firefighting.
+* **B (Pragmatic / Manageable Debt)**: Solid modern stack with some legacy technical debt or third-party integration maintenance; active refactoring roadmap and stable test automation.
+* **C (High Complexity / Severe Debt)**: Fragile distributed systems / microservice sprawl with poor documentation; brittle third-party dependencies requiring frequent manual intervention; inadequate testing sandboxes.
+* **D/F (Crippling Legacy / Architecture Failure)**: Unmaintained bespoke monoliths or broken architectures; zero automated CI/CD; frequent production data corruption or multi-hour outages.
+
+---
+
+## 5. Standardized Output Schema: Employer Due Diligence Dossier
+
+All research outputs must follow this standardized Markdown schema:
 
 ```markdown
 # Employer Due Diligence Dossier: [Company Name]
 **Target Role / Team:** [Role Title, if known]  
 **Audit Date:** [YYYY-MM-DD]  
-**Overall Verdict:** [🟢 HIGH CONFIDENCE FIT / 🟡 PROCEED WITH CAUTION / 🔴 SIGNIFICANT RISK]  
+**Objective Health Verdict:** [🟢 HIGH CONFIDENCE STABILITY / 🟡 PROCEED WITH CAUTION / 🔴 SIGNIFICANT RISK]  
 **Confidence Rating:** [High (80-100%) / Medium (50-79%) / Low (<50%)]
 
 ---
 
-## 1. Executive Summary & Decision Scorecard
+## 1. Objective Employer & Role Health Scorecard
 
-| Dimension | Grade (A–F) | Key Signal | Risk Level |
+| Dimension | Grade (A–F) | Anchored Key Metric | Risk Level |
 | :--- | :---: | :--- | :---: |
-| **1. Financial Stability & Runway** | [A/B/C/D/F] | [1-line summary] | [Low / Med / High] |
-| **2. Role & Org Stability (Layoff Risk)** | [A/B/C/D/F] | [1-line summary] | [Low / Med / High] |
-| **3. Work-Life Balance & Culture** | [A/B/C/D/F] | [1-line summary] | [Low / Med / High] |
-| **4. Tech Stack & Engineering Health** | [A/B/C/D/F] | [1-line summary] | [Low / Med / High] |
-| **5. Compensation & Career Growth** | [A/B/C/D/F] | [1-line summary] | [Low / Med / High] |
+| **1. Financial Stability & Runway** | [A/B/C/D/F] | [Hard ARR / runway / funding metric] | [Low / Med / High] |
+| **2. Role & Org Stability (Layoff Risk)** | [A/B/C/D/F] | [WARN & layoff track record] | [Low / Med / High] |
+| **3. Work-Life Balance & Culture** | [A/B/C/D/F] | [Hours / on-call burden / sentiment] | [Low / Med / High] |
+| **4. Tech Stack & Engineering Health** | [A/B/C/D/F] | [Architecture & operational complexity] | [Low / Med / High] |
 
-### TL;DR Verdict
-[3–4 concise sentences outlining the bottom-line truth: Is this a stable, high-growth environment, a high-burn grindhouse, or a volatile turnaround? Clear recommendation on whether to pursue, negotiate with conditions, or decline.]
+### Objective TL;DR Verdict
+[3–4 concise sentences detailing the objective truth regarding business longevity, layoff vulnerability, and operational friction—completely independent of candidate preferences.]
 
 ---
 
-## 2. Risk & Flag Matrix
+## 2. Candidate Alignment & Positioning Index (Optional / JD-Specific)
+
+| Match Dimension | Score / Alignment | Key Factor |
+| :--- | :---: | :--- |
+| **Technical Stack Fit** | [High / Med / Low] | [Overlap with candidate competencies] |
+| **Seniority & Scope Calibration** | [Matched / Under / Over] | [IC vs Tech Lead vs Management scope] |
+| **Career Trajectory Leverage** | [High / Med / Low] | [Resume value of this role & company] |
+
+---
+
+## 3. Risk & Flag Matrix
 
 ### 🔴 Critical Red Flags (Dealbreakers)
 - **[Flag Title]**: [Explanation backed by cited evidence].
@@ -132,16 +180,16 @@ All research outputs must follow this standardized Markdown schema to ensure con
 ### 🟡 Yellow Flags (Require Direct Verification)
 - **[Flag Title]**: [Explanation backed by cited evidence].
 
-### 🟢 Positive Strengths (Selling Points)
+### 🟢 Verified Strengths (Selling Points)
 - **[Strength Title]**: [Explanation backed by cited evidence].
 
 ---
 
-## 3. Deep-Dive Evidence Breakdown
+## 4. Deep-Dive Evidence Breakdown
 
 ### Section A: Financial & Business Viability
 - **Entity Type & Funding**: [Public (Ticker) / Private (Series X, $YM raised)]
-- **Revenue & Growth Metrics**: [Trends, profit margins, or runway estimates]
+- **Revenue & Growth Metrics**: [Hard metrics, ARR, profit margins, or runway estimates]
 - **Market Position & Vulnerabilities**: [Macro risks, customer reliance]
 - **Sources Consulted**: [List of URLs with timestamps]
 
@@ -159,41 +207,20 @@ All research outputs must follow this standardized Markdown schema to ensure con
 
 ### Section D: Tech Stack & Engineering Architecture
 - **Primary Stack**: [Languages, frameworks, cloud tooling]
-- **Technical Debt & Legacy Load**: [Modern cloud-native vs. legacy maintenance]
-- **Engineering Autonomy**: [Release cycles, CI/CD health, QA practices]
+- **Operational Complexity & Debt**: [Modern cloud-native vs. legacy maintenance vs. over-engineering]
+- **Engineering Autonomy & DX**: [Release cycles, CI/CD health, QA practices]
 - **Sources Consulted**: [List of URLs with timestamps]
 
 ---
 
-## 4. Reverse-Interview Action Playbook
+## 5. Reverse-Interview Action Playbook
 
-*Sharp, professional questions tailored to probe the exact risks and blind spots uncovered in this audit during interviews.*
+*Sharp, professional questions tailored to probe the exact risks and unverified flags uncovered in this audit during interviews.*
 
-### For the Hiring Manager:
-1. **[Question 1 targeting specific Yellow/Red flag]**: *"..."* (Intent: [What answer to look for])
-2. **[Question 2 targeting team stability / roadmap]**: *"..."* (Intent: [What answer to look for])
+### For the Hiring Manager / Leadership:
+1. **[Question targeting specific Yellow/Red flag]**: *"..."* (Intent: [What answer to look for])
+2. **[Question targeting financial runway / roadmap priority]**: *"..."* (Intent: [What answer to look for])
 
 ### For Peer Engineers / Team Members:
-1. **[Question 1 targeting on-call reality and sprint pace]**: *"..."* (Intent: [What answer to look for])
-2. **[Question 2 targeting tech debt and release friction]**: *"..."* (Intent: [What answer to look for])
-```
-
----
-
-## 5. Step-by-Step Execution Protocol for Agents
-
-When requested to audit a candidate employer:
-
-1. **Step 1 — Initialize & Scaffold**:
-   - Check if the target is a public or private company, target role, and location.
-2. **Step 2 — Dispatch Specialized Workers (Divide & Conquer)**:
-   - Worker 1 executes Financial & Business Health queries.
-   - Worker 2 executes Layoff History, WARN records & Org Stability queries.
-   - Worker 3 executes Culture, WLB, Levels.fyi & Community Discourse queries.
-   - Worker 4 executes Tech Stack, GitHub footprint & Engineering Culture queries.
-3. **Step 3 — Triangulate & Detect Conflicting Claims**:
-   - Resolve discrepancies between official company claims and employee/market data.
-   - Assign a **Confidence Score** based on source credibility and freshness.
-4. **Step 4 — Generate Dossier & Reverse-Interview Playbook**:
-   - Compile into the standardized Markdown template.
-   - Formulate pointed questions to resolve unverified yellow flags during the candidate's actual interview.
+1. **[Question targeting on-call reality and sprint pace]**: *"..."* (Intent: [What answer to look for])
+2. **[Question targeting operational complexity and DX]**: *"..."* (Intent: [What answer to look for])
