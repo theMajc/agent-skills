@@ -1,29 +1,28 @@
 ---
-name: candidate-employer-due-diligence
-description: "Rigorous, multi-agent due diligence pipeline for candidate employers. Features dual-mode execution: Quick Sanity Check (1-turn fast heuristic lookup) and Deep Multi-Stage Due Diligence (formal Multica stage barrier fan-out/fan-in and subagent orchestration). Evaluates business stability, layoff risk, work-life balance, tech stack health, and role viability with zero-sugarcoating and anchored scoring."
+name: candidate-employer-deep-diligence
+description: "Rigorous, multi-agent deep due diligence pipeline for candidate employers. Enforces Multica Stage Barrier (`--stage N`) Fan-Out/Fan-In and parallel subagent orchestration across 4 decoupled pillars: Financial Viability, Layoff History, Culture/WLB, and Tech Stack Architecture. Produces Master Due Diligence Dossiers with anchored scoring and Reverse-Interview Playbooks."
 user-invocable: true
 ---
 
-# Candidate Employer Due Diligence Skill
+# Candidate Employer Deep Due Diligence Skill
 
-A specialized, high-integrity research pipeline for career transitions. Designed to evaluate prospective employers objectively across business stability, employment longevity, work-life balance, engineering culture, and role risk before making career commitments.
+A specialized, high-integrity research pipeline for high-stakes career transitions, offer evaluations, and executive/senior engineering moves. Enforces formal decoupled stage barriers across financial health, layoff vulnerability, operational culture, and technical architecture.
 
 ---
 
 ## 1. Core Invariants & Anti-Hallucination Guardrails
 
-To protect the candidate from catastrophic career moves (e.g., joining right before a layoff, entering an abusive on-call rotation, or inheriting crippling technical debt), this skill enforces four non-negotiable invariants:
+To protect candidates from joining distressed or toxic organizations, four non-negotiable invariants are enforced:
 
 ### 1. The Zero-Sugarcoating Invariant (Brutal Honesty)
 - Corporate PR, self-published marketing blogs, sponsored "Best Places to Work" awards, and recruiter pitches are treated as **unverified claims ($cf = 0.10$)**.
-- The agent must **never euphemize red flags** (e.g., do not call "uncompensated 70-hour weeks" a "fast-paced entrepreneurial environment").
-- When evidence points to high turnover, toxic management, or financial distress, report it explicitly as a **Critical Risk**.
+- Red flags must **never be euphemized** (e.g., do not call "uncompensated 70-hour weeks" a "fast-paced entrepreneurial environment").
+- High turnover, toxic management, or financial distress must be reported explicitly as a **Critical Risk**.
 
 ### 2. Strict Decoupling of Employer Health vs. Candidate Alignment
 - **The Health Invariant**: The **Objective Employer & Role Health Scorecard** measures *only* factual business stability, financial runway, historical layoff risk, operating friction, and leadership sanity.
-- **No Keyword / Fit Inflation**: A candidate being a 100% technical match for a role **must NEVER inflate or mask** a company's financial instability, high turnover, or architectural dysfunction.
-- **No Technology Glamour**: The presence of modern or trendy tech (e.g., NestJS, Kafka, AI APIs) is **not** an automatic indicator of engineering health. It must be evaluated for operational complexity, maintenance overhead, and over-engineering risk.
-- **Dual-Index Output**: The audit produces two strictly non-overlapping indexes:
+- **No Keyword / Fit Inflation**: Candidate skill overlap **must NEVER inflate or mask** company instability or poor culture.
+- **Dual-Index Output**: Maintains two non-overlapping indexes:
   1. *Index 1: Objective Employer & Role Health (Macro Stability)*
   2. *Index 2: Candidate Match & Interview Positioning (Personal Alignment)*
 
@@ -32,58 +31,15 @@ To protect the candidate from catastrophic career moves (e.g., joining right bef
 - **Strictly Prohibited**:
   - Creating child sub-issues directly in `done` status without posted comments/evidence.
   - Creating child sub-issues and marking them `done` in the same turn without genuine worker delegation.
-  - Bypassing stage barriers when executing in Deep Mode.
-- In Deep Mode, every research pillar must produce its own self-contained evidence payload in its dedicated ticket or subagent transcript before the parent synthesis begins.
+  - Bypassing stage barriers.
+- Every research pillar must produce its own self-contained evidence payload before the parent synthesis begins.
 
 ### 4. The "Floor, Not Ceiling" Source Boundary
-- The agent **must satisfy minimum baseline categories**, but is **never restricted to a fixed static list**.
-- If a source dies, gets paywalled, or blocks automated access (e.g., Glassdoor/LinkedIn bot walls), the agent must dynamically discover alternative high-signal sources rather than failing or skipping the pillar (e.g., Google-indexed community snippets, SEC filings, WARN databases, Hacker News, Reddit `r/cscareerquestions`, `r/experienceddevs`).
+- Baseline inquiry categories are minimums; dynamically discover alternative high-signal sources when facing bot walls or paywalls (Google-indexed community snippets, SEC filings, WARN databases, Hacker News, Reddit `r/cscareerquestions`, `r/experienceddevs`).
 
 ---
 
-## 2. Dual-Mode Execution Contract (Explicit Depth Triage)
-
-To balance rapid screening with deep investigation, the skill supports two distinct operational depths:
-
-| Mode | Trigger / Alias | Execution Model | Typical Use Case | Deliverable |
-| :--- | :--- | :--- | :--- | :--- |
-| **Mode 1: Quick Sanity Check** *(Lightweight)* | `candidate-employer-due-diligence` (default), `--depth quick`, `"quick check"`, `"sanity check"` | Single-turn, single-agent fast heuristic pass (no sub-tasks or subagents) | Initial recruiter screening, triage before applying or introductory calls | **Quick Sanity Scorecard** with preliminary A–F grades, top dealbreakers, and Triage Verdict |
-| **Mode 2: Deep Multi-Stage Due Diligence** *(Heavy Pipeline)* | `candidate-employer-deep-diligence`, `--depth deep`, `"deep audit"`, `"deep diligence"`, `"full due diligence"` | Multi-stage decoupled orchestration via **Multica Stage Barriers (`--stage N`)** or **Parallel Subagents (`invoke_subagent`)** | Final-round interview prep, offer evaluation, executive/principal transitions | **Master Employer Due Diligence Dossier** with deep evidence, dual indexes, and Reverse-Interview Playbook |
-
-```
-                              ┌───────────────────────────────────┐
-                              │ User / Issue Trigger Received     │
-                              └─────────────────┬─────────────────┘
-                                                │
-                                    Is Depth Deep / Requested?
-                                                │
-                       ┌────────────────────────┴────────────────────────┐
-                       ▼ NO (Default / Quick)                            ▼ YES (Deep Mode)
-        ┌──────────────────────────────┐                 ┌───────────────────────────────┐
-        │  Mode 1: Quick Sanity Check  │                 │ Mode 2: Deep Due Diligence    │
-        ├──────────────────────────────┤                 ├───────────────────────────────┤
-        │ • 1-turn fast heuristic pass │                 │ • Decoupled multi-stage flow  │
-        │ • No child tickets/subagents │                 │ • Stage barriers / Subagents  │
-        │ • Rapid 4-pillar triage      │                 │ • Exhaustive evidence payload │
-        │ • Quick Sanity Scorecard     │                 │ • Master Due Diligence Dossier│
-        └──────────────────────────────┘                 └───────────────┬───────────────┘
-                                                                         │
-                                                          Environment Context Check
-                                                                         │
-                                                ┌────────────────────────┴────────────────────────┐
-                                                ▼ Multica Issue Environment                       ▼ Standalone / Chat Environment
-                                  ┌───────────────────────────────┐                 ┌───────────────────────────────┐
-                                  │ Protocol A: Stage Barriers    │                 │ Protocol B: Parallel Subagents│
-                                  │ • Stage 1 Fan-Out (4 todo)    │                 │ • invoke_subagent (4 workers) │
-                                  │ • Stage 2 Parked (1 backlog)  │                 │ • Isolated worker contexts    │
-                                  │ • Server barrier auto-wakeup  │                 │ • Reactive parent fan-in      │
-                                  │ • Parent Fan-In & Synthesis   │                 │ • Master Dossier Output       │
-                                  └───────────────────────────────┘                 └───────────────────────────────┘
-```
-
----
-
-## 3. Orchestration Protocols for Deep Mode
+## 2. Orchestration Protocols
 
 ### Protocol A: Native Multica Stage Barriers (`--stage N` Fan-Out / Fan-In)
 
@@ -185,7 +141,7 @@ When running in a direct chat room or autonomous CLI environment without Multica
 
 ---
 
-## 4. The 4 Specialized Research Pillars & Minimum Baselines
+## 3. The 4 Specialized Research Pillars & Minimum Baselines
 
 ### Pillar 1: Financial Viability & Business Health
 *Goal: Determine if the company has the financial runway and business momentum to sustain long-term employment.*
@@ -227,7 +183,7 @@ When running in a direct chat room or autonomous CLI environment without Multica
 
 ---
 
-## 5. Anchored Quantitative Scoring Rubrics (A–F Thresholds)
+## 4. Anchored Quantitative Scoring Rubrics (A–F Thresholds)
 
 To eliminate qualitative model drift across LLM tiers, assign letter grades using these strict anchored criteria:
 
@@ -257,50 +213,9 @@ To eliminate qualitative model drift across LLM tiers, assign letter grades usin
 
 ---
 
-## 6. Standardized Output Schemas
+## 5. Standardized Output Schema: Employer Due Diligence Dossier
 
-### Schema A: Quick Sanity Check Scorecard (Lightweight Mode)
-
-When executing in Quick Mode (1 turn), produce this condensed scorecard:
-
-```markdown
-# Quick Employer Sanity Check: [Company Name]
-**Target Role:** [Role Title / Team, if known]  
-**Audit Mode:** Quick Sanity Check (Lightweight Heuristic)  
-**Triage Verdict:** [🟢 PURSUE / 🟡 PROCEED WITH CAUTION / 🔴 PASS / HIGH RISK]
-
----
-
-## 1. Fast Health Scorecard
-
-| Dimension | Grade | Fast Signal / Anchored Metric | Risk Rating |
-| :--- | :---: | :--- | :---: |
-| **Financial Health & Runway** | [A/B/C/D/F] | [Valuation / ARR / Funding status] | [Low/Med/High] |
-| **Layoff & Org Stability** | [A/B/C/D/F] | [Layoff history & WARN notices] | [Low/Med/High] |
-| **Culture & WLB** | [A/B/C/D/F] | [Estimated hours & sentiment] | [Low/Med/High] |
-| **Tech Stack Health** | [A/B/C/D/F] | [Stack modernity & complexity] | [Low/Med/High] |
-
----
-
-## 2. Key Triage Findings
-- 🔴 **Top Red Flag**: [Flag description and evidence citation]
-- 🟡 **Primary Caution Item**: [Item needing clarification in recruiter call]
-- 🟢 **Top Selling Point**: [Verified core organizational strength]
-
----
-
-## 3. Initial Recruiter Screening Questions (Top 2)
-1. *"..."*
-2. *"..."*
-
-*(For comprehensive multi-stage audit with deep evidence payloads and reverse-interview playbook, run `candidate-employer-deep-diligence` or specify `--depth deep`)*.
-```
-
----
-
-### Schema B: Master Employer Due Diligence Dossier (Deep Mode)
-
-When executing in Deep Mode (Stage Barrier / Subagent consolidation), produce this complete dossier:
+All deep due diligence outputs must follow this standardized Markdown schema:
 
 ```markdown
 # Employer Due Diligence Dossier: [Company Name]
