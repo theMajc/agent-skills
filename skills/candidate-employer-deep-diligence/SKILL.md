@@ -26,118 +26,91 @@ To protect candidates from joining distressed or toxic organizations, four non-n
   1. *Index 1: Objective Employer & Role Health (Macro Stability)*
   2. *Index 2: Candidate Match & Interview Positioning (Personal Alignment)*
 
-### 3. Anti-Hollow-Orchestration & Stage Barrier Invariant
-- Sub-issues or subagents are **real units of decoupled execution**, not decorative checklists.
-- **Strictly Prohibited**:
+### 3. Native Multica Stage Barrier Contract
+- Sub-issues are **real units of decoupled execution**, not decorative checklists.
+- **Stage Barrier Exemption Rule**: Creating child issues with `--stage 1 --status todo` and ending your turn is **NOT "background-and-yield"**. It is the native Multica platform contract. The Multica server backend automatically schedules the worker tasks and triggers a fresh run on this parent ticket when Stage 1 completes.
+- **Prohibited**:
+  - Doing all research in the parent turn when running a deep due diligence pipeline.
   - Creating child sub-issues directly in `done` status without posted comments/evidence.
-  - Creating child sub-issues and marking them `done` in the same turn without genuine worker delegation.
-  - Bypassing stage barriers.
-- Every research pillar must produce its own self-contained evidence payload before the parent synthesis begins.
 
 ### 4. The "Floor, Not Ceiling" Source Boundary
 - Baseline inquiry categories are minimums; dynamically discover alternative high-signal sources when facing bot walls or paywalls (Google-indexed community snippets, SEC filings, WARN databases, Hacker News, Reddit `r/cscareerquestions`, `r/experienceddevs`).
 
 ---
 
-## 2. Orchestration Protocols
+## 2. Multi-Stage Lifecycle Execution Protocol (Multica Issue Environments)
 
-### Protocol A: Native Multica Stage Barriers (`--stage N` Fan-Out / Fan-In)
+When assigned a ticket to run deep due diligence on a company, determine your role in the lifecycle:
 
-When running within a Multica issue-tracking project, deep due diligence **MUST** leverage Multica's native stage barrier lifecycle:
-
+```mermaid
+graph TD
+    ParentStart[Parent Run 1: Initial Trigger] --> CheckChildren{Do Stage 1 Children Exist?}
+    CheckChildren -->|No| FanOut[Create 4 Child Tasks in Stage 1 todo<br/>Post Kickoff Comment<br/>EXIT TURN]
+    FanOut --> ServerBarrier[Multica Server Schedules & Runs 4 Stage 1 Worker Tasks]
+    ServerBarrier --> Worker1[Worker Run: Track 1 Financials -> Post Comment -> Done]
+    ServerBarrier --> Worker2[Worker Run: Track 2 Layoffs -> Post Comment -> Done]
+    ServerBarrier --> Worker3[Worker Run: Track 3 Culture -> Post Comment -> Done]
+    ServerBarrier --> Worker4[Worker Run: Track 4 Tech Stack -> Post Comment -> Done]
+    Worker1 & Worker2 & Worker3 & Worker4 --> BarrierComplete[Stage 1 Closes: Multica Server Wakes Parent Assignee]
+    BarrierComplete --> ParentRun2[Parent Run 2: Re-triggered by Server]
+    CheckChildren -->|Yes, All Done| ParentRun2
+    ParentRun2 --> Synthesize[Read 4 Child Comments -> Compile Master Dossier -> Post Final Comment -> Set Parent in_review]
 ```
-[Parent Ticket: Due Diligence Audit] (Status: in_progress)
-   │
-   ├── Phase 1 (Scouting & Stage 1 Fan-Out):
-   │      ├── Create Child 1: "Track 1: Financial & Business Health"        (--stage 1 --status todo --assignee-id <agent>)
-   │      ├── Create Child 2: "Track 2: Layoff & Stability History"         (--stage 1 --status todo --assignee-id <agent>)
-   │      ├── Create Child 3: "Track 3: Culture, WLB & Management Quality"  (--stage 1 --status todo --assignee-id <agent>)
-   │      ├── Create Child 4: "Track 4: Role Scope & Architecture"          (--stage 1 --status todo --assignee-id <agent>)
-   │      └── Create Child 5: "Stage 2: Master Dossier Synthesis"           (--stage 2 --status backlog --assignee-id <agent>)
-   │      └── [Parent Turn Exits / Yields to Platform Scheduler]
-   │
-   ├── Phase 2 (Autonomous Worker Execution):
-   │      ├── Worker 1 executes Track 1 → Posts comment to Child 1 → Sets Child 1 to 'done'
-   │      ├── Worker 2 executes Track 2 → Posts comment to Child 2 → Sets Child 2 to 'done'
-   │      ├── Worker 3 executes Track 3 → Posts comment to Child 3 → Sets Child 3 to 'done'
-   │      └── Worker 4 executes Track 4 → Posts comment to Child 4 → Sets Child 4 to 'done'
-   │
-   └── Phase 3 (Server Stage Barrier Wakeup & Parent Fan-In Synthesis):
-          ├── Multica Server detects all Stage 1 tasks terminal ('done') → Wakes Parent Assignee!
-          ├── Parent Lead Agent ingests all 4 Child comment payloads
-          ├── Parent Lead Agent synthesizes Master Employer Due Diligence Dossier
-          ├── Posts Master Dossier to Parent Issue comment
-          └── Sets Parent Issue status to 'in_review'
-```
-
-#### Exact Multica CLI Lifecycle Sequence:
-
-1. **Lead Turn 1 (Scaffolding & Fan-Out)**:
-   ```bash
-   # 1. Mark parent in_progress
-   multica issue status <parent-id> in_progress --no-start
-
-   # 2. Fan-out Stage 1 parallel worker issues in todo
-   multica issue create --title "Track 1: Financial & Business Health" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id <agent-id>
-   multica issue create --title "Track 2: Layoff & Stability History" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id <agent-id>
-   multica issue create --title "Track 3: Culture, WLB & Management Quality" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id <agent-id>
-   multica issue create --title "Track 4: Role Scope & Architecture" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id <agent-id>
-
-   # 3. Park Stage 2 synthesis issue in backlog
-   multica issue create --title "Stage 2: Master Dossier Synthesis" --parent <parent-id> --project <project-id> --stage 2 --status backlog --assignee-id <agent-id>
-   ```
-   *Lead agent posts a brief kickoff comment to the parent ticket and cleanly ends turn.*
-
-2. **Worker Turns (Parallel Independent Execution)**:
-   Each child issue runs as an independent task:
-   - Researches its dedicated pillar in depth.
-   - Saves findings to `./trackN_findings.md`.
-   - Posts findings to the child issue:
-     ```bash
-     multica issue comment add <child-id> --content-file "./trackN_findings.md"
-     multica issue status <child-id> done --no-start
-     rm ./trackN_findings.md
-     ```
-
-3. **Lead Turn 2 (Post-Barrier Wakeup & Master Synthesis)**:
-   When all 4 Stage 1 tasks reach `done`, Multica automatically wakes the parent assignee:
-   ```bash
-   # 1. Verify all children
-   multica issue children <parent-id> --output json
-
-   # 2. Read findings from each child comment
-   multica issue comment list <child-1-id> --roots-only --summary --compact --output json
-   multica issue comment list <child-2-id> --roots-only --summary --compact --output json
-   multica issue comment list <child-3-id> --roots-only --summary --compact --output json
-   multica issue comment list <child-4-id> --roots-only --summary --compact --output json
-
-   # 3. Synthesize Master Dossier, write to ./final_dossier.md, and post to parent
-   multica issue comment add <parent-id> --content-file "./final_dossier.md"
-   rm ./final_dossier.md
-
-   # 4. Advance parent to in_review
-   multica issue status <parent-id> in_review --no-start
-   ```
 
 ---
 
-### Protocol B: Standalone / Subagent Environment (`invoke_subagent` Fallback)
+### Step 1: Parent Ticket First Trigger (Fan-Out Stage)
+If you are running on the **parent issue** and `multica issue children <parent-id>` returns no child tasks:
+1. Set parent issue to `in_progress`:
+   ```bash
+   multica issue status <parent-id> in_progress --no-start
+   ```
+2. Create the 4 Stage 1 worker child issues assigned to Mika (`016e40ea-e07d-486a-a641-0b1ca7b4cc3a`):
+   ```bash
+   multica issue create --title "Track 1: Financial & Business Health" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id 016e40ea-e07d-486a-a641-0b1ca7b4cc3a --description "Execute deep audit of company capitalization, ARR trajectory, funding history, and financial runway."
+   multica issue create --title "Track 2: Layoff & Stability History" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id 016e40ea-e07d-486a-a641-0b1ca7b4cc3a --description "Audit Layoffs.fyi, state/provincial WARN notices, executive continuity, and target role origin."
+   multica issue create --title "Track 3: Culture, WLB & Management Quality" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id 016e40ea-e07d-486a-a641-0b1ca7b4cc3a --description "Evaluate average working hours, on-call severity, psychological safety, and remote policy stability."
+   multica issue create --title "Track 4: Role Scope & Architecture" --parent <parent-id> --project <project-id> --stage 1 --status todo --assignee-id 016e40ea-e07d-486a-a641-0b1ca7b4cc3a --description "Analyze technical stack health, architectural complexity, CI/CD maturity, and third-party integration friction."
+   ```
+3. Post a brief kickoff comment to the parent ticket:
+   ```bash
+   multica issue comment add <parent-id> --content "Stage 1 Fan-Out initialized. Dispatched 4 parallel worker sub-issues for Financial, Stability, Culture, and Architecture tracks. Yielding to Multica Stage Barrier."
+   ```
+4. **STOP AND END YOUR TURN IMMEDIATELY.** Do not perform research in this turn. The Multica server backend will dispatch the worker tasks.
 
-When running in a direct chat room or autonomous CLI environment without Multica issue tracking:
+---
 
-```
-[Lead Synthesizer Agent]
-   │
-   ├── Step 1: Dispatch 4 Parallel Subagents (invoke_subagent in a single call)
-   │      ├── Subagent 1: Role 'Financial Auditor' (Pillar 1 prompt & targets)
-   │      ├── Subagent 2: Role 'Layoff & Stability Auditor' (Pillar 2 prompt & targets)
-   │      ├── Subagent 3: Role 'Culture & WLB Auditor' (Pillar 3 prompt & targets)
-   │      └── Subagent 4: Role 'Architecture & Tech Auditor' (Pillar 4 prompt & targets)
-   │
-   ├── Step 2: Reactive Wakeup on Subagent Deliverables (isolated contexts)
-   │
-   └── Step 3: Compile Master Dossier and Output Directly to User
-```
+### Step 2: Child Worker Tasks (Parallel Execution)
+When you are invoked on a **child issue** (e.g. `Track 1`, `Track 2`, `Track 3`, or `Track 4`):
+1. Execute deep, targeted research for **your assigned pillar only**.
+2. Save full findings, verified data points, metrics, and source URLs to `./findings.md`.
+3. Post the evidence payload directly as a comment to your child issue:
+   ```bash
+   multica issue comment add <child-id> --content-file "./findings.md"
+   multica issue status <child-id> done --no-start
+   rm ./findings.md
+   ```
+4. End your turn.
+
+---
+
+### Step 3: Parent Ticket Second Trigger (Fan-In & Synthesis)
+When you are invoked on the **parent issue** and `multica issue children <parent-id>` shows all 4 Stage 1 child issues are `done`:
+1. Read the comment history of each child issue:
+   ```bash
+   multica issue comment list <child-1-id> --output json
+   multica issue comment list <child-2-id> --output json
+   multica issue comment list <child-3-id> --output json
+   multica issue comment list <child-4-id> --output json
+   ```
+2. Ingest the 4 evidence payloads and compile the **Master Employer Due Diligence Dossier** using the anchored rubrics below.
+3. Save the dossier to `./master_dossier.md` and post it to the parent issue:
+   ```bash
+   multica issue comment add <parent-id> --content-file "./master_dossier.md"
+   multica issue status <parent-id> in_review --no-start
+   rm ./master_dossier.md
+   ```
+4. End your turn.
 
 ---
 
@@ -145,47 +118,31 @@ When running in a direct chat room or autonomous CLI environment without Multica
 
 ### Pillar 1: Financial Viability & Business Health
 *Goal: Determine if the company has the financial runway and business momentum to sustain long-term employment.*
-
-* **Minimum Baseline Inquiries:**
-  * **Public Companies**: Latest SEC 10-K / 10-Q filing (Revenue trajectory over 3 years, operating margins, free cash flow, debt obligations, and key disclosures in the "Risk Factors" section).
-  * **Private / VC-Backed Startups**: Latest known funding round, valuation history, lead venture backers, estimated employee headcount growth/contraction, and estimated cash runway.
-  * **Revenue Model & Market Exposure**: Customer concentration risk, macroeconomic sensitivity, and primary revenue engines.
-* **Adaptive Discovery Fallbacks:**
-  * If financial reports are private, search for news of down-rounds, debt financing, hiring freezes, customer churn in public trade publications, or SEC Form D filings.
+- **Public**: Latest SEC 10-K / 10-Q (revenue, margins, cash flow, debt, risk disclosures).
+- **Private**: Crunchbase / PitchBook funding rounds, lead VC backers, valuation history, estimated ARR, employee headcount trajectory.
+- **Revenue Model**: Customer concentration, macroeconomic sensitivity, B2B SaaS retention.
 
 ### Pillar 2: Employment Stability & Layoff Track Record
 *Goal: Assess job security, organizational volatility, and leadership retention.*
-
-* **Minimum Baseline Inquiries:**
-  * **Layoff History**: Query **Layoffs.fyi**, news archives, and state/provincial **WARN Act notices** (mandatory legal filings prior to mass layoffs) over the past 24–36 months.
-  * **Restructuring & Pivot Cadence**: Frequency of re-organizations, executive departures (C-suite turnover), and business unit shutdowns.
-  * **Hiring Velocity vs. Backfill Ratio**: Is the target role a net-new strategic expansion, or a high-turnover backfill replacing a departed employee?
-* **Adaptive Discovery Fallbacks:**
-  * Search GitHub contributor graphs of key company repos or public forum discussions for sudden drops in core engineering personnel.
+- **Layoff History**: Query **Layoffs.fyi**, news archives, state/provincial **WARN Act notices** (past 36 months).
+- **Restructuring Cadence**: C-suite turnover, department shutdowns, pivot frequency.
+- **Hiring Context**: Is the target role a net-new strategic expansion, or a high-turnover backfill?
 
 ### Pillar 3: Culture, Work-Life Balance & Management Quality
-*Goal: Uncover the daily operational reality, on-call burdens, and employee psychological safety.*
-
-* **Minimum Baseline Inquiries:**
-  * **On-Call & Work Hours**: Look for data on weekly hours, after-hours expectations, on-call compensation, and incident response culture.
-  * **Community Discourse Triangulation**: Search **Reddit** (`r/cscareerquestions`, `r/experienceddevs`, local tech subreddits), **Levels.fyi** work-life reviews, **Hacker News** discussions, and public Google-indexed discussions (`site:teamblind.com "<company>" wlb OR culture`).
-  * **Remote / Flexibility Policy Stability**: Track record of sudden Return-to-Office (RTO) mandates or broken remote-work promises.
-* **Walled-Garden Bypass Rule:**
-  * Never fail on Glassdoor/Blind bot blocks. Search search-engine indexed snippets, developer communities, and cross-reference multiple independent developer opinions.
+*Goal: Uncover daily operational reality, on-call burdens, and employee psychological safety.*
+- **Work Hours & On-Call**: Average weekly hours, after-hours paging frequency, on-call compensation.
+- **Community Triangulation**: Reddit (`r/cscareerquestions`, `r/experienceddevs`), Levels.fyi reviews, Hacker News, Google-indexed discussions (`site:teamblind.com "<company>"`).
+- **Flexibility & Policy Stability**: Return-to-office (RTO) stability vs. remote autonomy.
 
 ### Pillar 4: Role Scope, Tech Stack Health & Engineering Maturity
 *Goal: Evaluate technical debt, engineering autonomy, tooling friction, and operational complexity.*
-
-* **Minimum Baseline Inquiries:**
-  * **Tech Stack Maturity & Complexity**: Core technologies, cloud infrastructure, CI/CD pipeline maturity, automated testing coverage, microservice sprawl vs monolith.
-  * **Engineering Footprint**: Public GitHub organization activity, engineering blogs, tech conference talks, open-source contributions.
-  * **Role Danger Signals**: Vague job responsibilities ("wear many hats" disguised as doing 3 roles), legacy system firefighting, or high on-call pager burden caused by fragile third-party integrations.
+- **Tech Stack Maturity**: Core languages, frameworks, cloud infrastructure, CI/CD automated deployment, test coverage.
+- **Operational Burden**: Fragile third-party API dependencies, microservice sprawl, legacy data synchronization friction.
+- **Engineering Footprint**: GitHub org activity, engineering blogs, tech conference talks.
 
 ---
 
 ## 4. Anchored Quantitative Scoring Rubrics (A–F Thresholds)
-
-To eliminate qualitative model drift across LLM tiers, assign letter grades using these strict anchored criteria:
 
 ### 1. Financial Stability & Runway
 * **A (Exceptional)**: Publicly traded with >$500M annual revenue & positive net operating margins, OR private company with >$30M ARR and verified profitability / >36 months cash runway.
@@ -213,9 +170,7 @@ To eliminate qualitative model drift across LLM tiers, assign letter grades usin
 
 ---
 
-## 5. Standardized Output Schema: Employer Due Diligence Dossier
-
-All deep due diligence outputs must follow this standardized Markdown schema:
+## 5. Master Output Schema: Employer Due Diligence Dossier
 
 ```markdown
 # Employer Due Diligence Dossier: [Company Name]
@@ -263,42 +218,38 @@ All deep due diligence outputs must follow this standardized Markdown schema:
 
 ---
 
-## 4. Deep-Dive Evidence Breakdown
+## 4. Deep-Dive Evidence Breakdown (Triangulated from Stage 1 Tracks)
 
-### Section A: Financial & Business Viability
-- **Entity Type & Funding**: [Public (Ticker) / Private (Series X, $YM raised)]
-- **Revenue & Growth Metrics**: [Hard metrics, ARR, profit margins, or runway estimates]
-- **Market Position & Vulnerabilities**: [Macro risks, customer reliance]
-- **Sources Consulted**: [List of URLs with timestamps]
+### Section A: Financial & Business Viability (from Track 1)
+- **Entity Type & Funding**: [Details]
+- **Revenue & Growth Metrics**: [Details]
+- **Sources Consulted**: [URLs]
 
-### Section B: Layoff History & Role Longevity
-- **Historical Layoffs**: [Dates, % of workforce affected, reasons cited]
-- **WARN Act Activity**: [Any state/provincial filings on record]
-- **Turnover & Org Changes**: [Executive shifts, department reorg frequency]
-- **Sources Consulted**: [List of URLs with timestamps]
+### Section B: Layoff History & Role Longevity (from Track 2)
+- **Historical Layoffs & WARN Filings**: [Details]
+- **Turnover & Org Changes**: [Details]
+- **Sources Consulted**: [URLs]
 
-### Section C: Daily Culture, WLB & Management
-- **Expected Work Hours**: [Average weekly hours from Levels.fyi/community]
-- **On-Call & Incident Burden**: [Frequency, compensation, rotation health]
-- **Management Sentiment**: [Psychological safety, micro-management signals]
-- **Sources Consulted**: [List of URLs with timestamps]
+### Section C: Daily Culture, WLB & Management (from Track 3)
+- **Expected Work Hours & On-Call**: [Details]
+- **Management Sentiment**: [Details]
+- **Sources Consulted**: [URLs]
 
-### Section D: Tech Stack & Engineering Architecture
-- **Primary Stack**: [Languages, frameworks, cloud tooling]
-- **Operational Complexity & Debt**: [Modern cloud-native vs. legacy maintenance vs. over-engineering]
-- **Engineering Autonomy & DX**: [Release cycles, CI/CD health, QA practices]
-- **Sources Consulted**: [List of URLs with timestamps]
+### Section D: Tech Stack & Engineering Architecture (from Track 4)
+- **Primary Stack & Architecture**: [Details]
+- **Operational Complexity & DX**: [Details]
+- **Sources Consulted**: [URLs]
 
 ---
 
 ## 5. Reverse-Interview Action Playbook
 
-*Sharp, professional questions tailored to probe the exact risks and unverified flags uncovered in this audit during interviews.*
-
 ### For the Hiring Manager / Leadership:
-1. **[Question targeting specific Yellow/Red flag]**: *"..."* (Intent: [What answer to look for])
-2. **[Question targeting financial runway / roadmap priority]**: *"..."* (Intent: [What answer to look for])
+1. **[Question targeting specific Yellow/Red flag]**: *"..."*  
+   - **Target Green Flag:** [What healthy answer sounds like]  
+   - **Warning Red Flag:** [What danger answer sounds like]
 
 ### For Peer Engineers / Team Members:
-1. **[Question targeting on-call reality and sprint pace]**: *"..."* (Intent: [What answer to look for])
-2. **[Question targeting operational complexity and DX]**: *"..."* (Intent: [What answer to look for])
+1. **[Question targeting on-call reality and DX]**: *"..."*  
+   - **Target Green Flag:** [What healthy answer sounds like]  
+   - **Warning Red Flag:** [What danger answer sounds like]
