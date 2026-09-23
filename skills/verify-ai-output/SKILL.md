@@ -1,6 +1,6 @@
 ---
 name: verify-ai-output
-description: "Post-generation verification protocol for AI-generated code and functions. Produces a structured, falsifiable edge-case checklist distinguishing explicitly handled vs. unhandled cases (empty inputs, duplicates, malformed payloads, rate limits/backoff, boundaries, concurrency) with mandatory line-level justifications and remediation actions. Invocable via /verify."
+description: "Post-generation verification protocol for AI-generated code and functions. Produces a structured, falsifiable edge-case checklist distinguishing explicitly handled vs. unhandled cases — drawn from the target function's actual domain and contract, not a fixed generic list — with mandatory line-level justifications and remediation actions. Invocable via /verify."
 user-invocable: true
 triggers:
   - "/verify"
@@ -18,7 +18,7 @@ Post-generation verification protocol for AI-generated code and functions. Conve
 
 ## 1. Core Philosophy & Invariants
 
-When AI generates code, subtle edge cases (e.g., malformed payloads, duplicate keys, transient rate limits, boundary inputs) are frequently overlooked or falsely assumed to be handled. The `/verify` skill enforces visible, falsifiable verification immediately following function generation.
+When AI generates code, subtle edge cases are frequently overlooked or falsely assumed to be handled — and which edge cases matter depends entirely on what the function actually does. A string-formatting helper has nothing to do with HTTP 429s; a query builder cares about injection, not resource cleanup. The `/verify` skill enforces visible, falsifiable verification immediately following function generation, scoped to the function's real domain rather than a generic list applied by rote.
 
 ### Non-Negotiable Invariants
 
@@ -30,27 +30,28 @@ When AI generates code, subtle edge cases (e.g., malformed payloads, duplicate k
    - Every row in the checklist requires an explicit **one-line justification** referencing specific line numbers, code constructs, or conditions in the generated function.
    - If a condition is not explicitly guarded in code, it **must be marked as Not Handled**. Rubber-stamping ("all cases handled") without line-level proof is a protocol failure.
 
-3. **Universal Arbitrary Function Applicability**
-   - The skill operates on any arbitrary function (API endpoints, data transformers, parsers, async workers, mathematical algorithms, utilities) across any programming language without requiring exercise-specific or custom test configuration.
+3. **Domain-Derived Scope, Not a Fixed List**
+   - The set of edge cases checked is derived from *this* function — its language, its stated or inferred contract, its actual failure surface — not from a generic checklist applied uniformly regardless of what the code does. §2 gives illustrative lenses to jog thinking; it is a reminder, not a taxonomy to complete.
+   - Applying an irrelevant category (e.g. probing rate-limit backoff on a pure in-memory sort) is itself a protocol failure — padding the report with inapplicable rows is as bad as missing an applicable one.
 
 4. **Actionable Remediation**
    - For every edge case marked as **Not Handled**, the report must state whether it represents an acceptable design decision (e.g., delegated to upstream gateway) or a critical gap requiring an immediate code patch.
 
 ---
 
-## 2. Universal Edge-Case Taxonomy
+## 2. Illustrative Lenses (non-exhaustive — use judgment, not a checklist)
 
-Every invocation of `/verify` evaluates the target function against the universal edge-case baseline:
+These are starting points to prime thinking about what could go wrong, grouped by the kind of function under review. Use whichever apply, ignore the ones that don't, and add categories that aren't listed here at all when the function's actual domain calls for them (SQL injection for a query builder, timezone/locale handling for a date function, Unicode normalization for a text parser, numerical stability for a scientific computation, and so on — the list of real domains is far longer than any table can hold).
 
-| # | Edge Case Category | Description & Probing Question | Typical Failure Mode |
-|---|---|---|---|
-| **1** | **Empty / Null / Undefined Input** | What happens if the input is `None`, `null`, `undefined`, empty string `""`, empty list `[]`, or empty dict `{}`? | `TypeError`, `NullPointerException`, indexing into empty sequence. |
-| **2** | **Duplicate Identifier / Collision** | How does the function behave if duplicate IDs, repeated records, or duplicate dictionary keys are supplied? | Silent overwrites, duplicate database inserts, non-idempotent mutations. |
-| **3** | **Malformed / Schema Violation** | What happens when unexpected data types, missing required fields, or truncated JSON payloads arrive? | Unhandled `KeyError`, schema parsing crash, corrupted downstream state. |
-| **4** | **Rate Limiting & HTTP 429 / Backoff** | If the function calls external APIs or downstream services, does it handle rate limits (HTTP 429) or transient 5xx errors with retry/exponential backoff? | Unhandled HTTP exceptions, cascading service degradation, infinite retry loops. |
-| **5** | **Boundary & Extreme Values** | What happens at numerical boundaries (`0`, `-1`, `MAX_INT`, negative offsets, floating point precision limits) or maximum payload sizes? | Off-by-one errors, division by zero, memory exhaustion, integer overflow. |
-| **6** | **Concurrency & State Mutability** | If invoked concurrently or with shared/mutable default arguments, does race conditions or state pollution occur? | Shared mutable default arguments (e.g., `def fn(acc=[])`), non-atomic read-modify-writes. |
-| **7** | **Resource Cleanup & Failure Modes** | Are open sockets, file handles, database connections, or subprocesses guaranteed to close on exception? | Leaked connections, unclosed file descriptors, orphaned worker threads. |
+| Function shape | Failure lenses worth checking |
+|---|---|
+| **Parses or validates external input** | Empty/null/malformed payloads, missing required fields, type coercion surprises, encoding issues. |
+| **Deduplicates, upserts, or keys by identity** | Duplicate/repeated identifiers, key collisions, identity changing mid-stream. |
+| **Calls a network service or external API** | Timeouts, rate limits (429)/5xx with retry-backoff, partial responses, connection drops. |
+| **Does numeric or bounds-sensitive work** | Zero, negative, `MAX_INT`/overflow, off-by-one, floating-point precision. |
+| **Runs concurrently or holds shared/mutable state** | Race conditions, non-atomic read-modify-write, mutable default arguments, deadlock/starvation. |
+| **Acquires a resource (socket, file, connection, subprocess)** | Leak on the exception path, double-close, not guaranteed to release under cancellation. |
+| **Anything else** | Whatever is actually specific to this function's contract — don't force it into the rows above if it doesn't belong there. |
 
 ---
 
@@ -65,8 +66,9 @@ When `/verify` is invoked on an AI-generated function or code snippet, follow th
 └──────────────────────────────┬──────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────┐
-│ 2. Systematic Edge-Case Probing                             │
-│    - Test against all 7 taxonomy categories                 │
+│ 2. Domain-Scoped Edge-Case Probing                           │
+│    - Determine which failure lenses actually apply (§2)     │
+│    - Add function-specific categories §2 doesn't cover       │
 └──────────────────────────────┬──────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────┐
@@ -90,29 +92,23 @@ When `/verify` is invoked on an AI-generated function or code snippet, follow th
 ### Step 1: Function Identification
 Extract the target function's name, parameters, expected invariants, and external dependencies.
 
-### Step 2: Systematic Edge-Case Probing
-Trace code paths against each taxonomy item:
-- Check guard clauses (`if not input: ...`).
-- Check deduplication mechanisms (`set()`, unique constraints, idempotency keys).
-- Check schema validation (`try/except`, Pydantic/Zod validators, type guards).
-- Check HTTP/client retries (backoff decorator, retry loop, status code inspection).
-- Check bounds checks (`len()`, range constraints, clamp functions).
-- Check concurrency safety (`asyncio.Lock`, atomic primitives, immutable defaults).
+### Step 2: Domain-Scoped Edge-Case Probing
+Read the function and decide, from what it actually does, which failure lenses in §2 apply — and what else applies that isn't in §2 at all. Then trace code paths against each one actually selected: guard clauses, deduplication/idempotency mechanisms, schema validation, retry/backoff logic, bounds checks, concurrency safety, resource cleanup, or whatever else is relevant to this function specifically.
 
 ### Step 3: Populate Verification Matrix
-Assign either `Handled [✓]` or `Not Handled [✗]` for each row. Provide a precise, single-sentence justification with code references.
+One row per edge case actually selected in Step 2 — however many that is. Assign either `Handled [✓]` or `Not Handled [✗]` for each, with a precise, single-sentence justification and code reference.
 
 ### Step 4: Remediation Plan
 If any unhandled item poses runtime or data integrity risks, provide a minimal, non-breaking code diff fixing the gap.
 
 ### Step 5: Deliver Verification Report
-Render the final output using the mandatory Markdown template format.
+Render the final output using the template format.
 
 ---
 
 ## 4. Output Template Specification
 
-The verification output must strictly adhere to the structure defined in `templates/verification_matrix.md`:
+The verification output follows the shape in `templates/verification_matrix.md`: one row per edge case actually identified as relevant to the function under review (not a fixed row count), each with Category / Specific Edge Case / Status / Line-Ref / Justification, followed by summary metrics computed from however many rows actually exist:
 
 ```markdown
 ### Verification Matrix: `<function_name>`
@@ -121,17 +117,13 @@ The verification output must strictly adhere to the structure defined in `templa
 | :--- | :--- | :---: | :--- | :--- |
 | **Empty Input** | `None` / `""` / `[]` | `Handled` | L4-L6 | Guard clause `if not records:` returns early with empty result. |
 | **Duplicate ID** | Duplicate primary keys in payload | `Not Handled` | — | Overwrites existing dictionary key without deduplication or warning. |
-| **Malformed Record** | Missing expected `'id'` or invalid type | `Handled` | L12-L15 | Validated via `validate_record()` with schema error catch. |
-| **429 / Backoff** | Downstream rate limit (HTTP 429) | `Not Handled` | L22 | Raw `requests.get()` call without retry decorator or backoff loop. |
-| **Boundary Values** | `batch_size = 0` or negative values | `Handled` | L8 | Clamped with `max(1, batch_size)`. |
-| **Concurrency** | Concurrent invocation on shared cache | `Not Handled` | L30 | In-memory cache dictionary is modified without lock. |
-| **Resource Leaks** | Network session / file descriptor | `Handled` | L18 | Managed within `with requests.Session() as session:` context. |
+| *(one row per edge case actually relevant to this function — add or omit rows freely)* | | | | |
 
 #### Summary Metrics
-- **Total Edge Cases Evaluated:** 7
-- **Handled:** 4 / 7 (57%)
-- **Not Handled:** 3 / 7 (43%)
-- **Critical Unhandled Gaps:** 2 (Duplicate ID, 429 / Backoff)
+- **Total Edge Cases Evaluated:** `<N — however many rows were actually relevant>`
+- **Handled:** `<count> / <N>`
+- **Not Handled:** `<count> / <N>`
+- **Critical Unhandled Gaps:** `<count>` (`<list>`)
 
 #### Remediation & Patch
 [Include code patch or explicit rationale for deferred items]

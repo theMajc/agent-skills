@@ -10,20 +10,17 @@
 
 #### 2. Edge-Case Verification Checklist
 
+One row per edge case actually relevant to *this* function's language, contract, and domain (see `SKILL.md` §2 for illustrative, non-exhaustive lenses) — add or omit rows freely; there is no fixed row count.
+
 | Edge Case Category | Specific Scenario Tested | Handled? | Evidence / Line Ref | Falsifiable Justification & Notes |
 | :--- | :--- | :---: | :--- | :--- |
-| **Empty / Null Input** | `None`, `null`, `""`, `[]`, `{}` | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining code guard or why missing>` |
-| **Duplicate Identifier** | Duplicate ID, repeated payload entry, replay request | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining deduplication or vulnerability>` |
-| **Malformed Record** | Missing required key, invalid data type, truncated payload | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining schema validation or crash risk>` |
-| **Rate Limit / 429 Backoff** | Downstream HTTP 429 / 503 / network throttling | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining retry/backoff or unhandled error>` |
-| **Boundary / Limits** | Numerical boundary (0, negative, MAX_INT), off-by-one, size limits | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining bounds checking or overflow risk>` |
-| **Concurrency & State** | Shared mutable state, async race conditions, non-atomic ops | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining thread/async safety or data race>` |
-| **Resource & Failure Modes** | Unhandled exception bubbling, unclosed file/socket descriptors | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining cleanup block (try/finally, with) or leak>` |
+| `<category derived from this function's actual failure surface>` | `<concrete scenario>` | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<One line explaining code guard or why missing>` |
+| `<...>` | `<...>` | `[Handled / Not Handled]` | `L<XX>-L<YY>` | `<...>` |
 
 ---
 
 #### 3. Verification Scorecard & Triage
-- **Total Edge Cases Evaluated:** `<Total>`
+- **Total Edge Cases Evaluated:** `<N — however many rows were actually relevant to this function>`
 - **Handled (`Handled`):** `<Count>` (`<Percentage>%`)
 - **Not Handled (`Not Handled`):** `<Count>` (`<Percentage>%`)
 - **Critical Gaps Requiring Remediation:** `<Count>` (`<List of categories>`)
