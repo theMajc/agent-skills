@@ -1,6 +1,6 @@
 # Verification Example: `sync_user_records`
 
-This example demonstrates how `/verify` processes an AI-generated data synchronization function, identifying both handled guardrails and unhandled edge cases with line-level justifications.
+This example demonstrates how `/verify` processes an AI-generated data synchronization function, identifying both handled guardrails and unhandled edge cases with line-level justifications. The seven categories checked below are relevant *because this function syncs records over a network* — a different function (a pure parser, a math routine) would surface a different, possibly shorter or longer, set of categories. Treat this as one instance of applying judgment, not the fixed set `/verify` always checks.
 
 ---
 

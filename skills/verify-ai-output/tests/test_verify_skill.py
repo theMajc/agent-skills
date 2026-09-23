@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Unit and validation test suite for verify-ai-output skill.
-Validates SKILL.md frontmatter, taxonomy coverage, template contract,
-anti-rubber-stamp invariants, and example consistency.
+Validates SKILL.md frontmatter, domain-scoped (non-fixed) edge-case guidance,
+template contract, anti-rubber-stamp invariants, and example consistency.
 """
 
 import os
@@ -40,29 +40,28 @@ class TestVerifyAiOutputSkill(unittest.TestCase):
         self.assertIn("/verify", frontmatter)
         self.assertIn("user-invocable: true", frontmatter)
 
-    def test_02_mandatory_taxonomy_coverage(self):
-        """Skill and template must cover all core edge-case taxonomy categories."""
-        required_categories = [
-            "Empty",
-            "Duplicate",
-            "Malformed",
-            "429",
-            "Boundary",
-            "Concurrency",
-        ]
-        for category in required_categories:
-            self.assertIn(
-                category.lower(),
-                self.skill_content.lower(),
-                f"SKILL.md must cover taxonomy category: {category}"
-            )
-            self.assertIn(
-                category.lower(),
-                self.template_content.lower(),
-                f"Template must cover taxonomy category: {category}"
-            )
+    def test_02_scope_is_domain_derived_not_fixed(self):
+        """Skill must explicitly scope edge-case selection to the function under
+        review rather than mandate a fixed universal category list — this is
+        the specific defect the skill was overhauled to fix (MIRA-108 feedback:
+        a hardcoded taxonomy narrows a frontier model's judgment instead of
+        directing it)."""
+        lowered = self.skill_content.lower()
+        self.assertIn("non-exhaustive", lowered)
+        self.assertIn("judgment", lowered)
+        # Must not claim the lens table is mandatory/complete
+        self.assertNotIn("universal edge-case taxonomy", lowered)
+        self.assertNotIn("mandatory taxonomy", lowered)
+        # Must explicitly warn against forcing inapplicable categories
+        self.assertIn("irrelevant", lowered)
 
-    def test_03_anti_rubber_stamp_invariant(self):
+    def test_03_template_has_no_fixed_row_count(self):
+        """Template must not hardcode a fixed 7-row / 7-category structure —
+        row count and categories must be derived per-function."""
+        self.assertNotIn("Total Edge Cases Evaluated:** `<Total>`", self.template_content)
+        self.assertIn("however many rows", self.template_content.lower())
+
+    def test_04_anti_rubber_stamp_invariant(self):
         """Must require both Handled and Not Handled states, rejecting single pass/fail."""
         self.assertIn("Handled", self.template_content)
         self.assertIn("Not Handled", self.template_content)
@@ -70,12 +69,15 @@ class TestVerifyAiOutputSkill(unittest.TestCase):
         # Verify SKILL.md explicitly forbids single pass/fail
         self.assertIn("pass/fail", self.skill_content.lower())
 
-    def test_04_example_conformance(self):
-        """Example must demonstrate real evaluation with both handled and not-handled rows."""
+    def test_05_example_conformance(self):
+        """Example must demonstrate real evaluation with both handled and not-handled
+        rows, and must explain why its categories were chosen rather than presenting
+        them as a fixed universal set."""
         self.assertIn("Handled", self.example_content)
         self.assertIn("Not Handled", self.example_content)
         self.assertIn("Critical Gaps Requiring Remediation", self.example_content)
         self.assertIn("Remediation Code Patch", self.example_content)
+        self.assertIn("not the fixed set", self.example_content.lower())
 
 
 if __name__ == "__main__":
