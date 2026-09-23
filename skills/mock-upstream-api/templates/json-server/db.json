@@ -1,0 +1,74 @@
+{
+  "items": [
+    {
+      "id": "mock-item-0001",
+      "name": "Sample Item 1",
+      "status": "active",
+      "amount": 10.0,
+      "createdAt": "2023-11-15T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0002",
+      "name": "Sample Item 2",
+      "status": "pending",
+      "amount": 17.5,
+      "createdAt": "2023-11-16T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0003",
+      "name": "Sample Item 3",
+      "status": "completed",
+      "amount": 25.0,
+      "createdAt": "2023-11-17T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0004",
+      "name": "Sample Item 4",
+      "status": "archived",
+      "amount": 32.5,
+      "createdAt": "2023-11-18T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0005",
+      "name": "Sample Item 5",
+      "status": "active",
+      "amount": 40.0,
+      "createdAt": "2023-11-19T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0006",
+      "name": "Sample Item 6",
+      "status": "pending",
+      "amount": 47.5,
+      "createdAt": "2023-11-20T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0007",
+      "name": "Sample Item 7",
+      "status": "completed",
+      "amount": 55.0,
+      "createdAt": "2023-11-21T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0008",
+      "name": "Sample Item 8",
+      "status": "archived",
+      "amount": 62.5,
+      "createdAt": "2023-11-22T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0009",
+      "name": "Sample Item 9",
+      "status": "active",
+      "amount": 70.0,
+      "createdAt": "2023-11-23T00:00:00.000Z"
+    },
+    {
+      "id": "mock-item-0010",
+      "name": "Sample Item 10",
+      "status": "pending",
+      "amount": 77.5,
+      "createdAt": "2023-11-24T00:00:00.000Z"
+    }
+  ]
+}

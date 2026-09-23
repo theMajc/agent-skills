@@ -1,3 +1,5 @@
 *.metadata.json
 .DS_Store
 .multica/
+__pycache__/
+*.pyc
