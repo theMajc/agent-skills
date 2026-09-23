@@ -31,8 +31,6 @@ if command -v rtk >/dev/null 2>&1; then
     RTK_BIN="$(command -v rtk)"
 elif [[ -x "$SCRIPT_DIR/../bin/rtk" ]]; then
     RTK_BIN="$SCRIPT_DIR/../bin/rtk"
-elif [[ -x "/home/max/.gemini/antigravity-cli/bin/rtk" ]]; then
-    RTK_BIN="/home/max/.gemini/antigravity-cli/bin/rtk"
 else
     RTK_BIN=""
 fi

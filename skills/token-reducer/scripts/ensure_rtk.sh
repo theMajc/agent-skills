@@ -11,13 +11,8 @@ set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_BIN_DIR="$SCRIPT_DIR/../bin"
-INSTALL_TARGET="/home/max/.gemini/antigravity-cli/bin/rtk"
 
 if command -v rtk >/dev/null 2>&1; then
-    exit 0
-fi
-
-if [[ -x "$INSTALL_TARGET" ]]; then
     exit 0
 fi
 
@@ -41,9 +36,9 @@ case "$ARCH" in
 esac
 
 mkdir -p "$SKILL_BIN_DIR"
-TARGET_DIR="/home/max/.gemini/antigravity-cli/bin"
+TARGET_DIR="$HOME/.local/bin"
 if [[ ! -w "$TARGET_DIR" ]]; then
-    TARGET_DIR="$SKILL_BIN_DIR"
+    mkdir -p "$TARGET_DIR" 2>/dev/null || TARGET_DIR="$SKILL_BIN_DIR"
 fi
 
 RTK_VERSION="v0.46.0"

@@ -34,7 +34,7 @@ npm run test          # Rewritten to: rtk npm run test
 
 If an agent or container starts in an environment where `rtk` is not installed:
 1. `agy_hook_rewrite.py` detects missing binary and invokes `scripts/ensure_rtk.sh`.
-2. `ensure_rtk.sh` downloads the static musl binary (~18MB, zero external dependencies) directly from GitHub releases and places it in `~/.gemini/antigravity-cli/bin/rtk`.
+2. `ensure_rtk.sh` downloads the static musl binary (~18MB, zero external dependencies) directly from GitHub releases and places it in `~/.local/bin/rtk`.
 3. If internet access is restricted or download fails, the hook automatically rewrites commands to the zero-dependency Python fallback `scripts/compact_fallback.py`.
 
 ---

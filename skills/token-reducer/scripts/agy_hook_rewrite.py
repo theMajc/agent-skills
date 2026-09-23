@@ -21,10 +21,9 @@ def resolve_rtk() -> str:
     rtk = shutil.which("rtk")
     if rtk:
         return rtk
-    # 2. Check skill bin or antigravity bin
-    for candidate in [SKILL_BIN_RTK, "/home/max/.gemini/antigravity-cli/bin/rtk"]:
-        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
-            return candidate
+    # 2. Check skill bin
+    if os.path.isfile(SKILL_BIN_RTK) and os.access(SKILL_BIN_RTK, os.X_OK):
+        return SKILL_BIN_RTK
     # 3. Try auto-installing via ensure_rtk.sh
     if os.path.isfile(ENSURE_SCRIPT) and os.access(ENSURE_SCRIPT, os.X_OK):
         try:

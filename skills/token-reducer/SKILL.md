@@ -66,7 +66,7 @@ Rather than burdening agents with manual CLI prefixing or prompt-driven wrappers
    - Configured via `rtk init -g --agent claude` to patch Claude Code's `~/.claude/settings.json` with `PreToolUse` hooks (`rtk hook claude`).
 
 3. **Auto-Installation & Offline Fallback (`ensure_rtk.sh`):**
-   - Automatically downloads and unpacks the official static musl binary (v0.46.0, ~18MB) from GitHub releases to `~/.gemini/antigravity-cli/bin/rtk` or `~/.local/bin/rtk` when absent.
+   - Automatically downloads and unpacks the official static musl binary (v0.46.0, ~18MB) from GitHub releases to `~/.local/bin/rtk` when absent.
    - In air-gapped or offline environments, `compact_run.sh` seamlessly falls back to `compact_fallback.py`.
 
 ---
