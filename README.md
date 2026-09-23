@@ -13,6 +13,7 @@ This repository hosts production-ready, reusable agent skills following the stan
 | [`candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) | Deep multi-stage due diligence pipeline with native Multica stage barrier fan-out/fan-in and decoupled evidence consolidation. | [`skills/candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) |
 | [`publish-to-trycloudflare`](skills/publish-to-trycloudflare/) | Publishes a local development port to a public TryCloudflare URL (`https://*.trycloudflare.com`) using an outbound zero-trust tunnel. | [`skills/publish-to-trycloudflare`](skills/publish-to-trycloudflare/) |
 | [`token-reducer`](skills/token-reducer/) | Minimizes agent token usage via sub-3ms RTK terminal compaction, transparent hooks, and Repomix AST codebase context packing. | [`skills/token-reducer`](skills/token-reducer/) |
+| [`verify-ai-output`](skills/verify-ai-output/) | Post-generation verification protocol (/verify) producing falsifiable edge-case checklists with dual handled/not-handled status and remediation patches. | [`skills/verify-ai-output`](skills/verify-ai-output/) |
 
 ---
 
@@ -29,6 +30,9 @@ multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/publ
 
 # Import token-reducer
 multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/token-reducer --output json
+
+# Import verify-ai-output
+multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/verify-ai-output --output json
 ```
 
 To bind the imported skill to an agent:
@@ -50,20 +54,28 @@ agent-skills/
     │       ├── publish_start.sh
     │       ├── publish_stop.sh
     │       └── publish_status.sh
-    └── token-reducer/
+    ├── token-reducer/
+    │   ├── SKILL.md
+    │   ├── README.md
+    │   ├── references/
+    │   │   ├── BENCHMARK_MATRIX.md
+    │   │   └── OPERATIONAL_RECIPES.md
+    │   ├── scripts/
+    │   │   ├── agy_hook_rewrite.py
+    │   │   ├── ensure_rtk.sh
+    │   │   ├── compact_run.sh
+    │   │   ├── pack_context.sh
+    │   │   └── compact_fallback.py
+    │   └── tests/
+    │       └── test_orchestrator.py
+    └── verify-ai-output/
         ├── SKILL.md
-        ├── README.md
-        ├── references/
-        │   ├── BENCHMARK_MATRIX.md
-        │   └── OPERATIONAL_RECIPES.md
-        ├── scripts/
-        │   ├── agy_hook_rewrite.py
-        │   ├── ensure_rtk.sh
-        │   ├── compact_run.sh
-        │   ├── pack_context.sh
-        │   └── compact_fallback.py
+        ├── templates/
+        │   └── verification_matrix.md
+        ├── examples/
+        │   └── example_verification.md
         └── tests/
-            └── test_orchestrator.py
+            └── test_verify_skill.py
 ```
 
 ## License
