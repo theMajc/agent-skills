@@ -11,6 +11,7 @@ This repository hosts production-ready, reusable agent skills following the stan
 | [`artifact-generator`](skills/artifact-generator/) | High-fidelity dynamic PDF and responsive web dossier generation via Typst and Tailwind across multiple audience presets. | [`skills/artifact-generator`](skills/artifact-generator/) |
 | [`candidate-employer-due-diligence`](skills/candidate-employer-due-diligence/) | Dual-mode candidate employer due diligence pipeline (Quick Sanity Check & Deep Multi-Stage Due Diligence with Multica stage barriers & subagents). | [`skills/candidate-employer-due-diligence`](skills/candidate-employer-due-diligence/) |
 | [`candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) | Deep multi-stage due diligence pipeline with native Multica stage barrier fan-out/fan-in and decoupled evidence consolidation. | [`skills/candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) |
+| [`mock-upstream-api`](skills/mock-upstream-api/) | Rapid mock upstream API generator (zero-dep Node, Express, json-server, FastAPI) with built-in pagination, 429 rate-limit simulation, and failure injection. | [`skills/mock-upstream-api`](skills/mock-upstream-api/) |
 | [`publish-to-trycloudflare`](skills/publish-to-trycloudflare/) | Publishes a local development port to a public TryCloudflare URL (`https://*.trycloudflare.com`) using an outbound zero-trust tunnel. | [`skills/publish-to-trycloudflare`](skills/publish-to-trycloudflare/) |
 | [`token-reducer`](skills/token-reducer/) | Minimizes agent token usage via sub-3ms RTK terminal compaction, transparent hooks, and Repomix AST codebase context packing. | [`skills/token-reducer`](skills/token-reducer/) |
 
@@ -21,6 +22,9 @@ This repository hosts production-ready, reusable agent skills following the stan
 To import a skill from this monorepo into your Multica workspace:
 
 ```bash
+# Import mock-upstream-api
+multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/mock-upstream-api --output json
+
 # Import artifact-generator
 multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/artifact-generator --output json
 
