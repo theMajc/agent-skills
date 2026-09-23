@@ -11,9 +11,9 @@ This repository hosts production-ready, reusable agent skills following the stan
 | [`artifact-generator`](skills/artifact-generator/) | High-fidelity dynamic PDF and responsive web dossier generation via Typst and Tailwind across multiple audience presets. | [`skills/artifact-generator`](skills/artifact-generator/) |
 | [`candidate-employer-due-diligence`](skills/candidate-employer-due-diligence/) | Dual-mode candidate employer due diligence pipeline (Quick Sanity Check & Deep Multi-Stage Due Diligence with Multica stage barriers & subagents). | [`skills/candidate-employer-due-diligence`](skills/candidate-employer-due-diligence/) |
 | [`candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) | Deep multi-stage due diligence pipeline with native Multica stage barrier fan-out/fan-in and decoupled evidence consolidation. | [`skills/candidate-employer-deep-diligence`](skills/candidate-employer-deep-diligence/) |
-| [`decompose`](skills/decompose/) | Fast structured-breakdown ritual (entities → data flow → edge cases → interface contract) for any non-trivial coding task before writing code, with a generated Mermaid diagram and judgment-driven (not fixed-list) edge-case identification. | [`skills/decompose`](skills/decompose/) |
 | [`mock-upstream-api`](skills/mock-upstream-api/) | Rapid mock upstream API generator (zero-dep Node, Express, json-server, FastAPI) with built-in pagination, 429 rate-limit simulation, and failure injection. | [`skills/mock-upstream-api`](skills/mock-upstream-api/) |
 | [`publish-to-trycloudflare`](skills/publish-to-trycloudflare/) | Publishes a local development port to a public TryCloudflare URL (`https://*.trycloudflare.com`) using an outbound zero-trust tunnel. | [`skills/publish-to-trycloudflare`](skills/publish-to-trycloudflare/) |
+| [`solution-sketch`](skills/solution-sketch/) | Fast structured-sketch ritual (entities → data flow → edge cases → interface contract) for framing one problem before writing code, with a generated Mermaid diagram and judgment-driven (not fixed-list) edge-case identification. Not for splitting a large initiative into sub-issues — see `autonomous-evolution-engine` for that. | [`skills/solution-sketch`](skills/solution-sketch/) |
 | [`token-reducer`](skills/token-reducer/) | Minimizes agent token usage via sub-3ms RTK terminal compaction, transparent hooks, and Repomix AST codebase context packing. | [`skills/token-reducer`](skills/token-reducer/) |
 | [`verify-ai-output`](skills/verify-ai-output/) | Post-generation verification protocol (/verify) producing falsifiable edge-case checklists — scoped to the function's actual domain, not a fixed category list — with dual handled/not-handled status and remediation patches. | [`skills/verify-ai-output`](skills/verify-ai-output/) |
 
@@ -36,8 +36,8 @@ multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/publ
 # Import token-reducer
 multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/token-reducer --output json
 
-# Import decompose
-multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/decompose --output json
+# Import solution-sketch
+multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/solution-sketch --output json
 
 # Import verify-ai-output
 multica skill import --url github.com/theMajc/agent-skills/tree/main/skills/verify-ai-output --output json

@@ -1,12 +1,14 @@
 ---
-name: decompose
-description: "Use before writing code on any non-trivial task — live pairing, an interview, solo implementation, or an autonomous run — right after the problem is understood and before code starts. Walks entities → data flow → edge cases → interface contract in a fixed order to produce a fast structured breakdown, and emits a Mermaid diagram from it. Use when asked to 'decompose this', 'break this down before we code', 'structure this problem', 'walk me through this problem', or at the start of any nontrivial implementation. Do not use for isolated diagram requests, post-hoc documentation of existing code, or as a rigid intake form."
+name: solution-sketch
+description: "Use before writing code on any non-trivial task — live pairing, an interview, solo implementation, or an autonomous run — right after the problem is understood and before code starts. Walks entities → data flow → edge cases → interface contract in a fixed order to produce a fast structured sketch, and emits a Mermaid diagram from it. This frames a single problem for implementation — it is not for splitting a large initiative into sub-issues/stage barriers (that's autonomous-evolution-engine's job). Use when asked to 'sketch this problem', 'frame this before we code', 'structure this before implementation', 'walk me through this problem', or at the start of any nontrivial implementation. Do not use for isolated diagram requests, post-hoc documentation of existing code, breaking an oversized task into sub-issues, or as a rigid intake form."
 user-invocable: true
 ---
 
-# Decompose & Diagram
+# Solution Sketch
 
-A fast ritual for turning a problem statement — spoken, written, or self-derived — into a structured breakdown before any code gets written. It externalizes reasoning; it does not replace it.
+A fast ritual for turning a problem statement — spoken, written, or self-derived — into a structured sketch before any code gets written. It externalizes reasoning; it does not replace it.
+
+This is about *framing one problem for implementation* — entities, flow, failure modes, and a boundary — not about *splitting a large initiative into sub-issues*. For the latter (oversized tasks, stage barriers, INVEST gates), use `autonomous-evolution-engine` instead.
 
 ---
 
